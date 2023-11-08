@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import serverlessExpress from '@vendia/serverless-express';
+import helmet from 'helmet';
 
 import { AppModule } from './app.module';
 import { Callback, Context, Handler } from 'aws-lambda';
@@ -9,7 +10,10 @@ let server: Handler;
 async function bootstrap(): Promise<Handler> {
   const app = await NestFactory.create(AppModule);
   await app.init();
-
+  app.enableCors({
+    origin: (req, callback) => callback(null, true),
+  });
+  app.use(helmet());
   const expressApp = app.getHttpAdapter().getInstance();
   return serverlessExpress({ app: expressApp });
 }
