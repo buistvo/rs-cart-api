@@ -1,4 +1,4 @@
-create table carts(
+create table cart(
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
     created_at TIMESTAMP NOT NULL,
@@ -6,7 +6,8 @@ create table carts(
     status VARCHAR(10) CHECK (status IN ('OPEN', 'ORDERED'))
 )
 
-create table cart_items(
+create table cart_item(
+    id UUID PRIMARY KEY,
 	cart_id UUID REFERENCES carts(id),
 	product_id UUID, 
 	count INT

@@ -12,7 +12,7 @@ export class OrderService {
   }
 
   create(data: any) {
-    const id = v4(v4())
+    const id = v4()
     const order = {
       ...data,
       id,

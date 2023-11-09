@@ -8,6 +8,8 @@ import { Callback, Context, Handler } from 'aws-lambda';
 let server: Handler;
 
 async function bootstrap(): Promise<Handler> {
+  console.log(process.env);
+
   const app = await NestFactory.create(AppModule);
   await app.init();
   app.enableCors({
@@ -15,6 +17,7 @@ async function bootstrap(): Promise<Handler> {
   });
   app.use(helmet());
   const expressApp = app.getHttpAdapter().getInstance();
+
   return serverlessExpress({ app: expressApp });
 }
 

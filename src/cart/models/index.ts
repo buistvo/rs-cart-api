@@ -8,24 +8,6 @@ export type Product = {
 };
 
 @Entity()
-export class CartItem {
-  @Column('uuid')
-  cart_id: string;
-
-  @Column('uuid')
-  product_id: string;
-
-  @Column('int')
-  count: number;
-
-  @ManyToOne(() => Cart, (cart) => cart.cartItems)
-  @JoinColumn({ name: 'cart_id' })
-  cart: Cart;
-
-  product: Product;
-}
-
-@Entity()
 export class Cart {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -44,4 +26,26 @@ export class Cart {
   
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
   cartItems: CartItem[];
+}
+
+@Entity()
+export class CartItem {
+
+  @PrimaryGeneratedColumn('increment')
+  id: number; 
+  
+  @Column('uuid')
+  cart_id: string;
+
+  @Column('uuid')
+  product_id: string;
+
+  @Column('int')
+  count: number;
+
+  @ManyToOne(() => Cart, (cart) => cart.cartItems)
+  @JoinColumn({ name: 'cart_id' })
+  cart: Cart;
+
+  product: Product;
 }
