@@ -20,14 +20,17 @@ export class CartService {
       where: { userId },
       relations: ['cartItems'],
     });
-    for (let item of cart.cartItems) {
-      const response = await fetch(
-        `${this.productServiceUrl}/${item.product_id}`,
-      );
-      if (response.ok) {
-        item.product = await response.json();
+    if (cart && cart.cartItems?.length) {
+      for (let item of cart.cartItems) {
+        const response = await fetch(
+          `${this.productServiceUrl}/${item.product_id}`,
+        );
+        if (response.ok) {
+          item.product = await response.json();
+        }
       }
     }
+
     return cart;
   }
 
@@ -47,9 +50,7 @@ export class CartService {
     return cart;
   }
 
-  async findOrCreateByUserId(
-    userId = '5d27e3e9-5d22-4a57-8d41-42d7299f62ce',
-  ): Promise<Cart> {
+  async findOrCreateByUserId(userId: string): Promise<Cart> {
     const userCart = await this.findByUserId(userId);
     if (userCart) {
       return userCart;
@@ -58,10 +59,7 @@ export class CartService {
     return this.createByUserId(userId);
   }
 
-  async updateByUserId(
-    userId = '5d27e3e9-5d22-4a57-8d41-42d7299f62ce',
-    cart: Cart,
-  ): Promise<Cart> {
+  async updateByUserId(userId: string, cart: Cart): Promise<Cart> {
     const { id, ...rest } = await this.findOrCreateByUserId(userId);
     const updatedCart: Cart = {
       id,
@@ -75,7 +73,7 @@ export class CartService {
     return saved;
   }
 
-  removeByUserId(userId = '5d27e3e9-5d22-4a57-8d41-42d7299f62ce'): void {
+  removeByUserId(userId: string): void {
     this.cartRepository.delete({ userId });
   }
 }

@@ -12,3 +12,10 @@ VALUES
     ('1c6c5429-8e9e-41ea-b722-5aa0091cb9a1', 'b267e4af-06c5-481a-b30c-6a60727b5017', 2),
     ('f9e1e4b9-15e7-4c7c-a074-4a9810e48ed6', '2c6d14e0-21f0-4e3c-9c76-4b34b9cd6962', 1),
     ('db1a8123-fc21-454c-9d47-7c6d98ff39db', 'a13c7a38-3a3f-4d95-aee3-f1c14ef3190e', 5);
+
+
+INSERT INTO "user" ("name", "email", "password")
+VALUES
+  ('John Doe', 'john@example.com', 'password123'),
+  ('Jane Doe', 'jane@example.com', 'securepass'),
+  ('Alice Smith', NULL, 'userpass');

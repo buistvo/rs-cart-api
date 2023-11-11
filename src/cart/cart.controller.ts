@@ -17,6 +17,7 @@ import { calculateCartTotal } from './models-rules';
 import { CartService } from './services';
 import { OrderService } from '../order/services/order.service';
 import { Order } from 'src/order/models/order';
+import { BasicAuthGuard } from 'src/auth';
 
 @Controller('api/profile/cart')
 export class CartController {
@@ -26,7 +27,7 @@ export class CartController {
   ) {}
 
   // @UseGuards(JwtAuthGuard)
-  // @UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Get()
   async findUserCart(@Req() req: AppRequest) {
     const cart = await this.cartService.findOrCreateByUserId(
@@ -41,7 +42,7 @@ export class CartController {
   }
 
   // @UseGuards(JwtAuthGuard)
-  // @UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Put()
   async updateUserCart(@Req() req: AppRequest, @Body() body) {
     // TODO: validate body payload...
@@ -61,7 +62,7 @@ export class CartController {
   }
 
   // @UseGuards(JwtAuthGuard)
-  // @UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Delete()
   clearUserCart(@Req() req: AppRequest) {
     this.cartService.removeByUserId(getUserIdFromRequest(req));
@@ -73,7 +74,7 @@ export class CartController {
   }
 
   // @UseGuards(JwtAuthGuard)
-  // @UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Post('checkout')
   async checkout(@Req() req: AppRequest, @Body() body: Partial<Order>) {
     const userId = getUserIdFromRequest(req);
