@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import * as uuid from 'uuid';
 
 import { Cart, Product } from '../models';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -59,16 +59,21 @@ export class CartService {
     return this.createByUserId(userId);
   }
 
-  async updateByUserId(userId: string, cart: Cart): Promise<Cart> {
+  async updateByUserId(
+    userId: string,
+    cart: Cart,
+    entityManager?: EntityManager,
+  ): Promise<Cart> {
     const { id, ...rest } = await this.findOrCreateByUserId(userId);
-    const updatedCart: Cart = {
+    const updatedCart = this.cartRepository.create({
       id,
       ...rest,
       ...cart,
       cartItems: [...cart.cartItems],
-    };
-
-    const saved = await this.cartRepository.save(updatedCart);
+    });
+    const saved = entityManager
+      ? await entityManager.save<Cart>(updatedCart)
+      : await this.cartRepository.save(updatedCart);
 
     return saved;
   }

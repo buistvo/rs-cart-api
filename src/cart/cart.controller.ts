@@ -18,12 +18,14 @@ import { CartService } from './services';
 import { OrderService } from '../order/services/order.service';
 import { Order } from 'src/order/models/order';
 import { BasicAuthGuard } from 'src/auth';
+import { DataSource } from 'typeorm';
 
 @Controller('api/profile/cart')
 export class CartController {
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
+    private dataSource: DataSource,
   ) {}
 
   // @UseGuards(JwtAuthGuard)
@@ -79,7 +81,6 @@ export class CartController {
   async checkout(@Req() req: AppRequest, @Body() body: Partial<Order>) {
     const userId = getUserIdFromRequest(req);
     const cart = await this.cartService.findByUserId(userId);
-
     if (!(cart && cart.cartItems.length)) {
       const statusCode = HttpStatus.BAD_REQUEST;
       req.statusCode = statusCode;
@@ -89,24 +90,42 @@ export class CartController {
         message: 'Cart is empty',
       };
     }
-
-    const { id: cartId, cartItems } = cart;
     const total = calculateCartTotal(cart);
-    const order = await this.orderService.create({
-      ...body, // TODO: validate and pick only necessary data
-      userId,
-      cart,
-      total,
-    });
-    await this.cartService.updateByUserId(userId, {
-      ...cart,
-      status: 'ORDERED',
-    });
-
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'OK',
-      data: { order },
-    };
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const order = await this.orderService.create(
+        {
+          ...body, // TODO: validate and pick only necessary data
+          userId,
+          cart,
+          total,
+        },
+        queryRunner.manager,
+      );
+      await this.cartService.updateByUserId(
+        userId,
+        {
+          ...cart,
+          status: 'ORDERED',
+        },
+        queryRunner.manager,
+      );
+      await queryRunner.commitTransaction();
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'OK',
+        data: { order },
+      };
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: e.message,
+      };
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

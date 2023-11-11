@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { Order } from '../models/order';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class OrderService {
@@ -19,16 +19,18 @@ export class OrderService {
     return order;
   }
 
-  async create(data: any) {
+  async create(data: any, entityManager?: EntityManager) {
     const id = v4();
     const order: Order = {
       ...data,
       id,
       status: 'IN_PROGRESS',
     };
-
-    await this.orderRepository.save(this.orderRepository.create(order));
-    return order;
+    const newOrder = this.orderRepository.create(order);
+    const result = entityManager
+      ? await entityManager.save(newOrder)
+      : await this.orderRepository.save(newOrder);
+    return result;
   }
 
   async update(orderId: string, data) {
