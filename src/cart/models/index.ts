@@ -1,10 +1,17 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export type Product = {
-  id: string,
-  title: string,
-  description: string,
-  price: number,
+  id: string;
+  title: string;
+  description: string;
+  price: number;
 };
 
 @Entity()
@@ -12,8 +19,8 @@ export class Cart {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('uuid')
-  user_id: string;
+  @Column('uuid', { name: 'user_id' })
+  userId: string;
 
   @Column('date')
   created_at: Date;
@@ -23,19 +30,18 @@ export class Cart {
 
   @Column('enum', { enum: ['OPEN', 'ORDERED'] })
   status: string;
-  
+
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
   cartItems: CartItem[];
 }
 
 @Entity()
 export class CartItem {
-
   @PrimaryGeneratedColumn('increment')
-  id: number; 
-  
-  @Column('uuid')
-  cart_id: string;
+  id: number;
+
+  @Column('uuid', { name: 'cart_id' })
+  cartId: string;
 
   @Column('uuid')
   product_id: string;
