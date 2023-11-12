@@ -20,6 +20,7 @@ import { Order } from 'src/order/models/order';
 import { BasicAuthGuard } from 'src/auth';
 import { DataSource } from 'typeorm';
 import { Cart, CartItem } from './models';
+import { v4 } from 'uuid';
 
 @Controller('api/profile/cart')
 export class CartController {
@@ -60,6 +61,16 @@ export class CartController {
           }
         : item;
     });
+    const newItems = body.filter(
+      (i) => !cart.cartItems.some((ci) => ci.product_id === i.product_id),
+    );
+    if (newItems.length) {
+      const itemsToAdd: CartItem[] = newItems.map((ni) => ({
+        cartId: cart.id,
+        ...ni,
+      }));
+      cart.cartItems.push(...itemsToAdd);
+    }
 
     const updatedCart = await this.cartService.updateByUserId(
       getUserIdFromRequest(req),

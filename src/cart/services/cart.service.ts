@@ -20,18 +20,7 @@ export class CartService {
       where: { userId },
       relations: ['cartItems'],
     });
-    if (cart && cart.cartItems?.length) {
-      for (let item of cart.cartItems) {
-        const response = await fetch(
-          `${this.productServiceUrl}/${item.product_id}`,
-        );
-        if (response.ok) {
-          item.product = await response.json();
-        }
-      }
-    }
-
-    return cart;
+    return this.enrichWithProductDetails(cart);
   }
 
   async createByUserId(userId: string) {
@@ -74,10 +63,24 @@ export class CartService {
     const saved = entityManager
       ? await entityManager.save<Cart>(updatedCart)
       : await this.cartRepository.save(updatedCart);
-    return saved;
+    return this.enrichWithProductDetails(saved);
   }
-
   removeByUserId(userId: string): void {
     this.cartRepository.delete({ userId });
+  }
+
+  private async enrichWithProductDetails(cart: Cart) {
+    if (cart && cart.cartItems?.length) {
+      for (let item of cart.cartItems) {
+        if (item.product) continue;
+        const response = await fetch(
+          `${this.productServiceUrl}/${item.product_id}`,
+        );
+        if (response.ok) {
+          item.product = await response.json();
+        }
+      }
+    }
+    return cart;
   }
 }
