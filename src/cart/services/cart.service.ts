@@ -69,16 +69,15 @@ export class CartService {
     this.cartRepository.delete({ userId });
   }
 
-  private async enrichWithProductDetails(cart: Cart) {
-    if (cart && cart.cartItems?.length) {
-      for (let item of cart.cartItems) {
-        if (item.product) continue;
-        const response = await fetch(
-          `${this.productServiceUrl}/${item.product_id}`,
-        );
-        if (response.ok) {
-          item.product = await response.json();
-        }
+  private async enrichWithProductDetails(cart: Cart): Promise<Cart> {
+    if (!cart || !cart.cartItems?.length) return cart;
+    for (let item of cart.cartItems) {
+      if (item.product) continue;
+      const response = await fetch(
+        `${this.productServiceUrl}/${item.product_id}`,
+      );
+      if (response.ok) {
+        item.product = (await response.json()) || { price: 0 };
       }
     }
     return cart;

@@ -82,7 +82,7 @@ export class CartController {
       message: 'OK',
       data: {
         cart: updatedCart,
-        total: calculateCartTotal(cart),
+        total: calculateCartTotal(updatedCart),
       },
     };
   }
