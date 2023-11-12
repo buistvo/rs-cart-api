@@ -70,7 +70,7 @@ export class CartController {
       statusCode: HttpStatus.OK,
       message: 'OK',
       data: {
-        updatedCart,
+        cart: updatedCart,
         total: calculateCartTotal(cart),
       },
     };
