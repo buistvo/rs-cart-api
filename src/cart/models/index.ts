@@ -31,7 +31,7 @@ export class Cart {
   @Column('enum', { enum: ['OPEN', 'ORDERED'] })
   status: string;
 
-  @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
+  @OneToMany(() => CartItem, (cartItem) => cartItem.cart, { cascade: true })
   cartItems: CartItem[];
 }
 

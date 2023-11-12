@@ -61,7 +61,7 @@ export class CartService {
 
   async updateByUserId(
     userId: string,
-    cart: Cart,
+    cart: Partial<Cart>,
     entityManager?: EntityManager,
   ): Promise<Cart> {
     const { id, ...rest } = await this.findOrCreateByUserId(userId);
@@ -74,7 +74,6 @@ export class CartService {
     const saved = entityManager
       ? await entityManager.save<Cart>(updatedCart)
       : await this.cartRepository.save(updatedCart);
-
     return saved;
   }
 

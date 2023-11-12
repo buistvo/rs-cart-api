@@ -11,10 +11,14 @@ async function bootstrap(): Promise<Handler> {
   console.log(process.env);
 
   const app = await NestFactory.create(AppModule);
-  await app.init();
   app.enableCors({
-    origin: (req, callback) => callback(null, true),
+    origin: 'https://d16pd4ocp5ok6l.cloudfront.net',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   });
+  await app.init();
+
   app.use(helmet());
   const expressApp = app.getHttpAdapter().getInstance();
 

@@ -20,16 +20,14 @@ import { Cart, CartItem } from './cart';
       autoLoadEntities: true,
       synchronize: true,
       ssl: {
-        rejectUnauthorized: false
-    }
+        rejectUnauthorized: false,
+      },
     }),
     AuthModule,
     CartModule,
     OrderModule,
   ],
-  controllers: [
-    AppController,
-  ],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

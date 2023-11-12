@@ -19,6 +19,7 @@ import { OrderService } from '../order/services/order.service';
 import { Order } from 'src/order/models/order';
 import { BasicAuthGuard } from 'src/auth';
 import { DataSource } from 'typeorm';
+import { Cart, CartItem } from './models';
 
 @Controller('api/profile/cart')
 export class CartController {
@@ -46,18 +47,30 @@ export class CartController {
   // @UseGuards(JwtAuthGuard)
   @UseGuards(BasicAuthGuard)
   @Put()
-  async updateUserCart(@Req() req: AppRequest, @Body() body) {
-    // TODO: validate body payload...
-    const cart = await this.cartService.updateByUserId(
+  async updateUserCart(@Req() req: AppRequest, @Body() body: CartItem[]) {
+    const cart = await this.cartService.findByUserId(getUserIdFromRequest(req));
+    cart.cartItems = cart.cartItems.map((item) => {
+      const itemToUpdate = body.find(
+        (dtoItem) => dtoItem.product_id === item.product_id,
+      );
+      return itemToUpdate
+        ? {
+            ...item,
+            ...itemToUpdate,
+          }
+        : item;
+    });
+
+    const updatedCart = await this.cartService.updateByUserId(
       getUserIdFromRequest(req),
-      body,
+      cart,
     );
 
     return {
       statusCode: HttpStatus.OK,
       message: 'OK',
       data: {
-        cart,
+        updatedCart,
         total: calculateCartTotal(cart),
       },
     };
