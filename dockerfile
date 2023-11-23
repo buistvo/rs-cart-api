@@ -32,5 +32,11 @@ COPY --from=builder /app/node_modules /app/node_modules
 # Expose the port the app runs on
 EXPOSE 3000
 
+ENV DB_HOST=shop-db.ck7ptdyer5qm.eu-north-1.rds.amazonaws.com
+ENV DB_PORT=5432
+ENV DB_DATABASE=cartdb
+ENV DB_USERNAME=postgres
+ENV DB_PASSWORD=SECRET_PASSWORD
+
 # Command to run the application
 CMD ["node", "dist/main.js"]
