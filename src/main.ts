@@ -5,10 +5,9 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as dotenv from 'dotenv';
-import * as https from 'https';
-import * as express from 'express';
-import * as enforce from 'express-sslify';
-import * as fs from 'fs';
+
+let server: Handler;
+
 // async function bootstrap(): Promise<Handler> {
 //   console.log(process.env);
 
@@ -39,15 +38,10 @@ import * as fs from 'fs';
 const port = process.env.PORT || 3000;
 
 async function bootstrap() {
+  console.log(process.env);
   dotenv.config();
-  const httpsOptions = {
-    key: fs.readFileSync('.certificate/key.pem'),
-    cert: fs.readFileSync('.certificate/cert.pem'),
-  };
 
-  const app = await NestFactory.create(AppModule, { httpsOptions });
-
-  app.use(enforce.HTTPS({ trustProtoHeader: true }));
+  const app = await NestFactory.create(AppModule);
 
   app.enableCors({
     origin: (req, callback) => callback(null, true),
@@ -58,3 +52,24 @@ async function bootstrap() {
 bootstrap().then(() => {
   console.log('App is running on %s port', port);
 });
+
+// async function bootstrap() {
+//   dotenv.config();
+//   const httpsOptions = {
+//     key: fs.readFileSync('.certificate/key.pem'),
+//     cert: fs.readFileSync('.certificate/cert.pem'),
+//   };
+
+//   const app = await NestFactory.create(AppModule, { httpsOptions });
+
+//   app.use(enforce.HTTPS({ trustProtoHeader: true }));
+
+//   app.enableCors({
+//     origin: (req, callback) => callback(null, true),
+//   });
+//   app.use(helmet());
+//   await app.listen(port);
+// }
+// bootstrap().then(() => {
+//   console.log('App is running on %s port', port);
+// });

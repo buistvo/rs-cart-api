@@ -1,3 +1,4 @@
+
 # Use an official Node.js runtime as a parent image
 FROM node:18-alpine as builder
 
@@ -11,6 +12,8 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Copy the source code to the working directory
+# COPY .ebextensions /var/proxy/staging/nginx/
+# COPY .platform /var/proxy/staging/nginx/
 COPY . .
 RUN npm install --global rimraf
 RUN npm install --global @nestjs/cli
@@ -27,7 +30,10 @@ WORKDIR /app
 # Copy only the necessary files from the builder stage
 COPY --from=builder /app/dist /app/dist
 COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /app/.certificate /app/.certificate
+# COPY --from=builder /app/.certificate /.certificate
+# COPY --from=builder /app/.certificate /app/.certificate
+# COPY --from=builder .platform .platform
+
 # Expose the port the app runs on
 EXPOSE 3000
 
