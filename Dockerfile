@@ -30,9 +30,8 @@ WORKDIR /app
 # Copy only the necessary files from the builder stage
 COPY --from=builder /app/dist /app/dist
 COPY --from=builder /app/node_modules /app/node_modules
-# COPY --from=builder /app/.certificate /.certificate
-# COPY --from=builder /app/.certificate /app/.certificate
-# COPY --from=builder .platform .platform
+COPY --from=builder /app/.certificate /.certificate
+COPY --from=builder /app/.certificate /app/.certificate
 
 # Expose the port the app runs on
 EXPOSE 3000
