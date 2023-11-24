@@ -5,7 +5,10 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as dotenv from 'dotenv';
-
+import * as https from 'https';
+import * as express from 'express';
+import * as enforce from 'express-sslify';
+import * as fs from 'fs';
 // async function bootstrap(): Promise<Handler> {
 //   console.log(process.env);
 
@@ -37,9 +40,14 @@ const port = process.env.PORT || 3000;
 
 async function bootstrap() {
   dotenv.config();
-  console.log(process.env);
+  const httpsOptions = {
+    key: fs.readFileSync('.certificate/key.pem'),
+    cert: fs.readFileSync('.certificate/cert.pem'),
+  };
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { httpsOptions });
+
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
 
   app.enableCors({
     origin: (req, callback) => callback(null, true),

@@ -12,7 +12,6 @@ RUN npm ci --only=production
 
 # Copy the source code to the working directory
 COPY . .
-
 RUN npm install --global rimraf
 RUN npm install --global @nestjs/cli
 
@@ -28,7 +27,7 @@ WORKDIR /app
 # Copy only the necessary files from the builder stage
 COPY --from=builder /app/dist /app/dist
 COPY --from=builder /app/node_modules /app/node_modules
-
+COPY --from=builder /app/.certificate /app/.certificate
 # Expose the port the app runs on
 EXPOSE 3000
 
