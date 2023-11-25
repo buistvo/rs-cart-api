@@ -1,0 +1,12 @@
+#Excluded to avoid copying unnecessary dependencies
+node_modules
+#Excluded to avoid copying TypeScript source files and generated maps since they are not needed at runtime
+dist
+*.log
+*.ts
+*.map
+*.md
+Dockerfile*
+.dockerignore
+#Excluded since this will be deployed without serverless
+.serverless 
