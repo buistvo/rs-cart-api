@@ -7,6 +7,8 @@ import { BasicStrategy, JwtStrategy, LocalStrategy } from './strategies';
 
 import { JWT_CONFIG } from '../constants';
 import { UsersModule } from '../users/users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/models/user';
 
 const { secret, expiresIn } = JWT_CONFIG;
 
@@ -15,13 +17,9 @@ const { secret, expiresIn } = JWT_CONFIG;
     UsersModule,
     PassportModule, //.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({ secret, signOptions: { expiresIn } }),
+    TypeOrmModule.forFeature([User]),
   ],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    LocalStrategy,
-    BasicStrategy,
-  ],
-  exports: [ AuthService ],
+  providers: [AuthService, JwtStrategy, LocalStrategy, BasicStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}
